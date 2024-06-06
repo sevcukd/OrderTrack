@@ -1,0 +1,161 @@
+﻿<Window x:Class="OrderTrack.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:OrderTrack"
+        mc:Ignorable="d"
+        WindowStyle="None"
+        Title="MainWindow" Height="768" Width="1366">
+    <Window.Resources>
+        <Style x:Key="OrderItemStyle" TargetType="ListViewItem">
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="36"/>
+            <!--<Setter Property="Background" Value="Gray"/>-->
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Status}" Value="Preparing">
+                    <Setter Property="Background" Value="Yellow"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Status}" Value="Ready">
+                    <Setter Property="Background" Value="LightGreen"/>
+                </DataTrigger>
+                <!--<DataTrigger Binding="{Binding Status}" Value="Waiting">
+                    <Setter Property="Background" Value="LightGray"/>
+                </DataTrigger>-->
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="TextBlock" x:Key="GridViewColumnTextStyle">
+            <Setter Property="FontSize" Value="36"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="5*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Черга замовлень:"
+                   Grid.Row="0" Grid.Column="0" Margin="20,0,0,0"
+                   HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                   FontSize="54" FontWeight="DemiBold"
+                   />
+        <TextBlock Text="Готові замовлення:"
+                   Grid.Row="0" Grid.Column="1" Margin="20,0,0,0"
+           HorizontalAlignment="Left" VerticalAlignment="Bottom"
+           FontSize="54" FontWeight="DemiBold"
+           />
+
+        <!--<ListView ItemsSource="{Binding Orders, RelativeSource={RelativeSource 
+                                   Mode=FindAncestor, AncestorType=Window}}"
+                  Grid.Column="0" Grid.Row="1"  ItemContainerStyle="{StaticResource OrderItemStyle}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Order Number" Width="150">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="Order Number" Style="{StaticResource GridViewColumnTextStyle}"/>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding OrderNumber}" Style="{StaticResource GridViewColumnTextStyle}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Status" Width="200">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="Status" Style="{StaticResource GridViewColumnTextStyle}"/>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="{Binding StatusIcon}" Width="36" Height="36"/>
+                                    <TextBlock Text="{Binding Status}" Margin="10,0,0,0" Style="{StaticResource GridViewColumnTextStyle}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>-->
+
+        <!-- List for Preparing and Waiting -->
+        <ListView Grid.Column="0" Grid.Row="1" ItemsSource="{Binding ActiveOrders}" ItemContainerStyle="{StaticResource OrderItemStyle}" >
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Order Number" Width="150">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="Order Number" Style="{StaticResource GridViewColumnTextStyle}"/>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding OrderNumber}" Style="{StaticResource GridViewColumnTextStyle}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Status" Width="200">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="Status" Style="{StaticResource GridViewColumnTextStyle}"/>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="{Binding StatusIcon}" Width="36" Height="36"/>
+                                    <TextBlock Text="{Binding Status}" Margin="10,0,0,0" Style="{StaticResource GridViewColumnTextStyle}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <!-- List for Ready -->
+        <ListView Grid.Column="1" Grid.Row="1" ItemsSource="{Binding ReadyOrders}" ItemContainerStyle="{StaticResource OrderItemStyle}" >
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Order Number" Width="150">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="Order Number" Style="{StaticResource GridViewColumnTextStyle}"/>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding OrderNumber}" Style="{StaticResource GridViewColumnTextStyle}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Status" Width="200">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="Status" Style="{StaticResource GridViewColumnTextStyle}"/>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="{Binding StatusIcon}" Width="36" Height="36"/>
+                                    <TextBlock Text="{Binding Status}" Margin="10,0,0,0" Style="{StaticResource GridViewColumnTextStyle}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        
+    </Grid>
+</Window>
