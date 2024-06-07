@@ -33,6 +33,7 @@ namespace OrderTrack.Services
                     string sql = @"
                     CREATE TABLE Orders (
                         Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        Status INTEGER NOT NULL,
                         IdWorkplace INTEGER NOT NULL,
                         CodePeriod INTEGER NOT NULL,
                         CodeReceipt INTEGER NOT NULL,
@@ -42,7 +43,15 @@ namespace OrderTrack.Services
                         DateEnd DATETIME,
                         Type TEXT,
                         JSON TEXT
-                    );";
+                    );
+        CREATE TABLE USER(
+            CODE_USER INTEGER NOT NULL,
+            NAME_USER TEXT NOT NULL,
+            BAR_CODE TEXT NOT NULL,
+            Type_User INTEGER NOT NULL,
+            LOGIN TEXT NOT NULL,
+            PASSWORD TEXT NOT NULL
+        );";
 
                     using (var command = new SQLiteCommand(sql, connection))
                     {

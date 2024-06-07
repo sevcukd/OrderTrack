@@ -15,20 +15,43 @@ namespace OrderTrack.Services
             _connectionString = DatabaseService.GetConnectionString();
         }
 
-        public IEnumerable<OrderEntity> GetAllOrders()
+        public IEnumerable<Order> GetAllOrders()
         {
             using (var connection = new SQLiteConnection(_connectionString))
             {
-                return connection.Query<OrderEntity>("SELECT * FROM Orders").ToList();
+                return connection.Query<Order>("SELECT * FROM Orders").ToList();
             }
         }
-
-        public void AddOrder(OrderEntity order)
+        public IEnumerable<Order> GetActiveOrders()
         {
             using (var connection = new SQLiteConnection(_connectionString))
             {
-                string sql = @"INSERT INTO Orders (IdWorkplace, CodePeriod, CodeReceipt, CodeWares, DateCreate, DateStart, DateEnd, Type, JSON)
-                               VALUES (@IdWorkplace, @CodePeriod, @CodeReceipt, @CodeWares, @DateCreate, @DateStart, @DateEnd, @Type, @JSON)";
+                return connection.Query<Order>($"SELECT * FROM Orders where Status <{(int)eStatus.Ready};").ToList();
+            }
+        }
+        public IEnumerable<Order> GetReadyOrders()
+        {
+            using (var connection = new SQLiteConnection(_connectionString))
+            {
+                return connection.Query<Order>($"SELECT * FROM Orders where Status = {(int)eStatus.Ready};").ToList();
+            }
+        }
+        /// для тесту 
+        public void AddOrders(IEnumerable<Order> orders)
+        {
+            using (var connection = new SQLiteConnection(_connectionString))
+            {
+                string sql = $@"INSERT INTO Orders (IdWorkplace, Status, CodePeriod, CodeReceipt, CodeWares, DateCreate, DateStart, DateEnd, Type, JSON)
+                               VALUES (@{nameof(Order.IdWorkplace)},@{nameof(Order.Status)}, @{nameof(Order.CodePeriod)}, @{nameof(Order.CodeReceipt)}, @{nameof(Order.CodeWares)}, @{nameof(Order.DateCreate)}, @{nameof(Order.DateStart)}, @{nameof(Order.DateEnd)}, @{nameof(Order.Type)}, @{nameof(Order.JSON)})";
+                connection.Execute(sql, orders);
+            }
+        }
+        public void AddOrder(Order order)
+        {
+            using (var connection = new SQLiteConnection(_connectionString))
+            {
+                string sql = $@"INSERT INTO Orders (IdWorkplace, Status, CodePeriod, CodeReceipt, CodeWares, DateCreate, DateStart, DateEnd, Type, JSON)
+                               VALUES (@{nameof(Order.IdWorkplace)},@{nameof(Order.Status)}, @{nameof(Order.CodePeriod)}, @{nameof(Order.CodeReceipt)}, @{nameof(Order.CodeWares)}, @{nameof(Order.DateCreate)}, @{nameof(Order.DateStart)}, @{nameof(Order.DateEnd)}, @{nameof(Order.Type)}, @{nameof(Order.JSON)})";
                 connection.Execute(sql, order);
             }
         }

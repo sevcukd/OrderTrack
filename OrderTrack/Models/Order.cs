@@ -2,19 +2,13 @@
 {
     public class Order
     {
-        public int OrderNumber { get; set; }
-        public string Status { get; set; }
-        public string StatusIcon { get; set; }
-        public DateTime TimeAdded { get; set; }
-
+        public int OrderNumber { get => Id < 100 ? Id : Id % 100; }
+        public eStatus Status { get; set; }
+        public string StatusIcon { get => $"Images/{Status}.png"; }
         public Order()
         {
-            TimeAdded = DateTime.Now;
+            DateCreate = DateTime.Now;
         }
-    }
-
-    public class OrderEntity
-    {
         public int Id { get; set; }
         public int IdWorkplace { get; set; }
         public int CodePeriod { get; set; }
@@ -26,4 +20,12 @@
         public string Type { get; set; }
         public string JSON { get; set; }
     }
+    public enum eStatus
+    {
+        Waiting,
+        Preparing,
+        Ready,
+    }
+
+
 }
