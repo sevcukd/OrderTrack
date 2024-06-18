@@ -64,5 +64,13 @@ namespace OrderTrack.Services
                 connection.Execute(sql, new { Id = id });
             }
         }
+        public void ReplaceUser(IEnumerable<User> pUser)
+        {
+            using (var connection = new SQLiteConnection(_connectionString))
+            {
+                string SqlReplaceUser = "replace into User(CODE_USER, NAME_USER, BAR_CODE, Type_User, LOGIN, PASSWORD) values(@CodeUser, @NameUser, @BarCode, @TypeUser, @Login, @PassWord);";
+                connection.Execute(SqlReplaceUser, pUser);
+            }
+        }
     }
 }

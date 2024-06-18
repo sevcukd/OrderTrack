@@ -3,6 +3,7 @@ using OrderTrack.Services;
 using System.Collections.ObjectModel;
 using System.Timers;
 using System.Windows;
+using System.Windows.Controls;
 using Timer = System.Timers.Timer;
 
 namespace OrderTrack.ViewModel
@@ -15,6 +16,7 @@ namespace OrderTrack.ViewModel
         private Timer _timer;
 
         private readonly OrderRepository _orderRepository;
+
 
         public MainViewModel()
         {
@@ -29,8 +31,11 @@ namespace OrderTrack.ViewModel
             //    new Order {  Status = eStatus.Ready }
             //};
 
+            var aa = Global.SQLiteDatabasePath;
+
             _orderRepository = new OrderRepository();
-            DatabaseService.CreateDailyDatabase();
+
+            CreateDailyDatabase();
 
             var newOrders = new List<Order>
         {
@@ -53,6 +58,7 @@ namespace OrderTrack.ViewModel
         {
             _orderRepository.AddOrders(orders);
         }
+
         public ObservableCollection<Order> GetActiveOrders ()
         {
             return new ObservableCollection<Order>(_orderRepository.GetActiveOrders());
@@ -71,6 +77,14 @@ namespace OrderTrack.ViewModel
                     ReadyOrders.Remove(order);
                 }
             });
+        }
+        private void CreateDailyDatabase()
+        {
+            DatabaseService.CreateDailyDatabase();
+            var _msSqlRepository = new MsSqlRepository();
+            var users = _msSqlRepository.SqlGetUser();
+            _orderRepository.ReplaceUser(users);
+
         }
     }
 }

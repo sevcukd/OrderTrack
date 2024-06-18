@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data.SQLite;
 using System.IO;
+using System.Windows.Media.Media3D;
 namespace OrderTrack.Services
 {
     public static class DatabaseService
@@ -8,7 +9,7 @@ namespace OrderTrack.Services
         public static string GetDatabaseName()
         {
             string today = DateTime.Now.ToString("ddMMyy");
-            return $"Orders_{today}.db";
+            return Path.Combine(Global.SQLiteDatabasePath, $"Orders_{today}.db");
         }
 
         public static string GetConnectionString()
@@ -58,6 +59,9 @@ namespace OrderTrack.Services
                         command.ExecuteNonQuery();
                     }
                 }
+
+
+                
             }
         }
     }
