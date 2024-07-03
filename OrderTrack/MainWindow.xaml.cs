@@ -1,7 +1,4 @@
-﻿using OrderTrack.Models;
-using OrderTrack.ViewModel;
-using System.Collections.ObjectModel;
-using System.Timers;
+﻿using OrderTrack.ViewModel;
 using System.Windows;
 
 
@@ -15,8 +12,8 @@ namespace OrderTrack
         public MainWindow()
         {
             InitializeComponent();
+
             this.DataContext = new MainViewModel();
         }
-        
     }
 }

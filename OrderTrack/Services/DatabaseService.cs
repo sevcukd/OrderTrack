@@ -1,7 +1,5 @@
-﻿using System;
-using System.Data.SQLite;
+﻿using System.Data.SQLite;
 using System.IO;
-using System.Windows.Media.Media3D;
 namespace OrderTrack.Services
 {
     public static class DatabaseService
@@ -38,7 +36,6 @@ namespace OrderTrack.Services
                         IdWorkplace INTEGER NOT NULL,
                         CodePeriod INTEGER NOT NULL,
                         CodeReceipt INTEGER NOT NULL,
-                        CodeWares INTEGER NOT NULL,
                         DateCreate DATETIME,
                         DateStart DATETIME,
                         DateEnd DATETIME,
@@ -52,6 +49,25 @@ namespace OrderTrack.Services
             Type_User INTEGER NOT NULL,
             LOGIN TEXT NOT NULL,
             PASSWORD TEXT NOT NULL
+        );
+        CREATE TABLE Order_Wares(
+            ID_WORKPLACE INTEGER  NOT NULL,
+            CODE_PERIOD INTEGER  NOT NULL,
+            CODE_RECEIPT INTEGER  NOT NULL,
+            CODE_WARES INTEGER  NOT NULL,
+            QUANTITY NUMBER   NOT NULL,
+            SORT INTEGER  NOT NULL,
+            DATE_CREATE DATETIME NOT NULL DEFAULT (datetime('now','localtime')),
+            USER_CREATE INTEGER  NOT NULL
+            );
+CREATE TABLE OrderReceiptLink(
+            IdWorkplace INTEGER  NOT NULL,
+            CodePeriod INTEGER  NOT NULL,
+            CodeReceipt INTEGER  NOT NULL,
+            CodeWares INTEGER NOT NULL,
+            Sort INTEGER NOT NULL default 0,
+            CodeWaresTo INTEGER NOT NULL,            
+            Quantity NUMBER NOT NULL default 0
         );";
 
                     using (var command = new SQLiteCommand(sql, connection))
