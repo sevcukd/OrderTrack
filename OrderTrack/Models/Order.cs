@@ -1,4 +1,6 @@
 ﻿using ModelMID;
+using System.ComponentModel;
+using Utils;
 
 namespace OrderTrack.Models
 {
@@ -7,6 +9,7 @@ namespace OrderTrack.Models
         private int _OrderNumber;
         public int OrderNumber { get => Id < 100 ? Id : Id % 100; set => _OrderNumber = value; }
         public eStatus Status { get; set; }
+        public string TranslatedStatus { get => Status.GetDescription(); }
         public string StatusIcon { get => $"Images/{Status}.png"; }
         public Order()
         {
@@ -25,8 +28,11 @@ namespace OrderTrack.Models
     }
     public enum eStatus
     {
+        [Description("Очікує")]
         Waiting,
+        [Description("Готується")]
         Preparing,
+        [Description("Готово!")]
         Ready,
     }
 

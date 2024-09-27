@@ -11,6 +11,8 @@
         <Style x:Key="OrderItemStyle" TargetType="ListViewItem">
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="FontSize" Value="36"/>
+            <!--вирівнювання елементів в середині таблиці-->
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/> 
             <!--<Setter Property="Background" Value="Gray"/>-->
             <Style.Triggers>
                 <DataTrigger Binding="{Binding Status}" Value="Preparing">
@@ -27,6 +29,13 @@
         <Style TargetType="TextBlock" x:Key="GridViewColumnTextStyle">
             <Setter Property="FontSize" Value="36"/>
             <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+        <Style TargetType="TextBlock" x:Key="ColumnTextStyle">
+            <Setter Property="FontSize" Value="60"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            
         </Style>
         <!--сортування по статусу та ID-->
         <CollectionViewSource x:Key="ActiveOrdersViewSource" Source="{Binding ActiveOrders}">
@@ -62,30 +71,47 @@
         <ListView Grid.Column="0" Grid.Row="1" ItemsSource="{Binding Source={StaticResource ActiveOrdersViewSource}}" ItemContainerStyle="{StaticResource OrderItemStyle}" >
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Order Number" Width="250">
+                    <GridViewColumn Width="150">
+                        <GridViewColumn.HeaderContainerStyle>
+                            <Style TargetType="{x:Type GridViewColumnHeader}">
+                                <Setter Property="HorizontalContentAlignment" Value="Center" />
+                            </Style>
+                        </GridViewColumn.HeaderContainerStyle>
                         <GridViewColumn.HeaderTemplate>
                             <DataTemplate>
-                                <TextBlock Text="Order Number" Style="{StaticResource GridViewColumnTextStyle}"/>
+                                <TextBlock Text="№" Style="{StaticResource GridViewColumnTextStyle}"/>
                             </DataTemplate>
                         </GridViewColumn.HeaderTemplate>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding OrderNumber}" Style="{StaticResource GridViewColumnTextStyle}"/>
+                                <TextBlock Text="{Binding OrderNumber}" Style="{StaticResource ColumnTextStyle}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="Status" Width="200">
+                    <GridViewColumn  Width="400">
                         <GridViewColumn.HeaderTemplate>
                             <DataTemplate>
-                                <TextBlock Text="Status" Style="{StaticResource GridViewColumnTextStyle}"/>
+                                <TextBlock Text="Статус замовлення" Style="{StaticResource GridViewColumnTextStyle}"/>
                             </DataTemplate>
                         </GridViewColumn.HeaderTemplate>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
-                                    <Image Source="{Binding StatusIcon}" Width="36" Height="36"/>
-                                    <TextBlock Text="{Binding Status}" Margin="10,0,0,0" Style="{StaticResource GridViewColumnTextStyle}"/>
+                                    <!--<Image Source="{Binding StatusIcon}" Width="36" Height="36"/>-->
+                                    <TextBlock Text="{Binding TranslatedStatus}" Margin="10,0,0,0" Style="{StaticResource ColumnTextStyle}"/>
                                 </StackPanel>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn >
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="" Style="{StaticResource GridViewColumnTextStyle}"/>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Image Source="{Binding StatusIcon}"  Height="100"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
@@ -97,30 +123,42 @@
         <ListView Grid.Column="1" Grid.Row="1" ItemsSource="{Binding ReadyOrders}" ItemContainerStyle="{StaticResource OrderItemStyle}" >
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Order Number" Width="250">
+                    <GridViewColumn Header="Order Number" Width="150">
                         <GridViewColumn.HeaderTemplate>
                             <DataTemplate>
-                                <TextBlock Text="Order Number" Style="{StaticResource GridViewColumnTextStyle}"/>
+                                <TextBlock Text="№" Style="{StaticResource GridViewColumnTextStyle}"/>
                             </DataTemplate>
                         </GridViewColumn.HeaderTemplate>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding OrderNumber}" Style="{StaticResource GridViewColumnTextStyle}"/>
+                                <TextBlock Text="{Binding OrderNumber}" Style="{StaticResource ColumnTextStyle}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="Status" Width="200">
+                    <GridViewColumn  Width="400">
                         <GridViewColumn.HeaderTemplate>
                             <DataTemplate>
-                                <TextBlock Text="Status" Style="{StaticResource GridViewColumnTextStyle}"/>
+                                <TextBlock Text="Статус замовлення" Style="{StaticResource GridViewColumnTextStyle}"/>
                             </DataTemplate>
                         </GridViewColumn.HeaderTemplate>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
-                                    <Image Source="{Binding StatusIcon}" Width="36" Height="36"/>
-                                    <TextBlock Text="{Binding Status}" Margin="10,0,0,0" Style="{StaticResource GridViewColumnTextStyle}"/>
+                                    <!--<Image Source="{Binding StatusIcon}" Width="36" Height="36"/>-->
+                                    <TextBlock Text="{Binding TranslatedStatus}" Margin="10,0,0,0" Style="{StaticResource ColumnTextStyle}"/>
                                 </StackPanel>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn >
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="" Style="{StaticResource GridViewColumnTextStyle}"/>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Image Source="{Binding StatusIcon}" Height="100"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>

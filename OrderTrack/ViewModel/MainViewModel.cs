@@ -42,7 +42,7 @@ namespace OrderTrack.ViewModel
             new Order { IdWorkplace = 3,Status=eStatus.Preparing, CodePeriod = 124, CodeReceipt = 457,  DateCreate = DateTime.Now, DateStart = DateTime.Now, DateEnd = DateTime.Now, Type = "Type2", JSON = "{}" }
         };
 
-            //AddOrdersToDatabase(newOrders);
+            AddOrdersToDatabase(newOrders);
 
             //var test2 = _orderRepository.GetOrderId(order);
             RefreshMenu();
@@ -110,8 +110,8 @@ namespace OrderTrack.ViewModel
                         //код для отримання номера замовлення
                         ComandReceipt = JsonConvert.DeserializeObject<CommandAPI<Receipt>>(pDataApi);
                         int orderNumber = CreateOrder(ComandReceipt.Data, pDataApi);
-                        Res = new Status(0, $"Номер замовлення : {orderNumber}");
-                        MessageBox.Show($"Створено нове замовлення з номером: {orderNumber}");
+                        Res = new Status(0, $"{orderNumber}");
+                        //MessageBox.Show($"Створено нове замовлення з номером: {orderNumber}");
                         break;
                     default:
                         Res = new Status(0, $"Не існує метода для обробки команди {pC.Command}!");

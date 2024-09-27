@@ -40,6 +40,7 @@ namespace OrderTrack.Services
                         DateStart DATETIME,
                         DateEnd DATETIME,
                         Type TEXT,
+                        CODE_USER INTEGER NOT NULL DEFAULT 0,
                         JSON TEXT
                     );
         CREATE TABLE USER(
