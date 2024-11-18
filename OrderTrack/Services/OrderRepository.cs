@@ -92,7 +92,31 @@ namespace OrderTrack.Services
 
             }
         }
+        public Order UpdateOrder(Order order)
+        {
+            using (var connection = new SQLiteConnection(_connectionString))
+            {
+                string sql = @"
+                UPDATE Orders 
+                SET 
+                    IdWorkplace = @IdWorkplace,
+                    Status = @Status,
+                    CodePeriod = @CodePeriod,
+                    CodeReceipt = @CodeReceipt,
+                    CodeWares = @CodeWares,
+                    DateCreate = @DateCreate,
+                    DateStart = @DateStart,
+                    DateEnd = @DateEnd,
+                    Type = @Type,
+                    JSON = @JSON
+                WHERE Id = @Id;
 
+                SELECT * FROM Orders WHERE Id = @Id;
+                ";
+
+                return connection.QuerySingle<Order>(sql, order);
+            }
+        }
         public void DeleteOrder(int id)
         {
             using (var connection = new SQLiteConnection(_connectionString))

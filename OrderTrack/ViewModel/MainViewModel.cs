@@ -5,6 +5,7 @@ using OrderTrack.Services;
 using OrderTrack.Sockets;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Dynamic;
 using System.Timers;
 using System.Windows;
 using Utils;
@@ -12,7 +13,7 @@ using Timer = System.Timers.Timer;
 
 namespace OrderTrack.ViewModel
 {
-    public class MainViewModel: INotifyPropertyChanged
+    public class MainViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public ObservableCollection<Order> ActiveOrders { get; set; }
@@ -103,6 +104,8 @@ namespace OrderTrack.ViewModel
             {
                 CommandAPI<dynamic> pC = JsonConvert.DeserializeObject<CommandAPI<dynamic>>(pDataApi);
                 CommandAPI<Receipt> ComandReceipt;
+                CommandAPI<Order> ComandOrder;
+
                 //CommandAPI<InfoRemoteCheckout> CommandRemoteInfo;
                 switch (pC.Command)
                 {
@@ -112,6 +115,20 @@ namespace OrderTrack.ViewModel
                         int orderNumber = CreateOrder(ComandReceipt.Data, pDataApi);
                         Res = new Status(0, $"{orderNumber}");
                         //MessageBox.Show($"Створено нове замовлення з номером: {orderNumber}");
+                        break;
+                    case eCommand.ChangeOrderState:
+                        ComandOrder = JsonConvert.DeserializeObject<CommandAPI<Order>>(pDataApi);
+                        var order = UpdateOrder(ComandOrder.Data, pDataApi);
+                        Res = new Status(0, order.ToJSON());
+                        break;
+                    case eCommand.GetAllOrders:
+                        var AllOrders = GetAllOrders(pDataApi);
+                        Res = new Status(0, AllOrders.ToJSON());
+                        break;
+
+                    case eCommand.GetActiveOrders:
+                        var ActiveOrders = GetActiveOrders(pDataApi);
+                        Res = new Status(0, ActiveOrders.ToJSON());
                         break;
                     default:
                         Res = new Status(0, $"Не існує метода для обробки команди {pC.Command}!");
@@ -128,10 +145,22 @@ namespace OrderTrack.ViewModel
             {
                 wares.Add(new OrderWares(goods));
             }
-            var order = (new Order { IdWorkplace = receipt.IdWorkplace, Status = eStatus.Waiting, CodePeriod = receipt.CodePeriod, CodeReceipt = receipt.CodeReceipt,  DateCreate = DateTime.Now, DateStart = DateTime.Now,  Type = receipt.TranslationTypeReceipt, JSON =  json, Wares = wares });
+            var order = (new Order { IdWorkplace = receipt.IdWorkplace, Status = eStatus.Waiting, CodePeriod = receipt.CodePeriod, CodeReceipt = receipt.CodeReceipt, DateCreate = DateTime.Now, DateStart = DateTime.Now, Type = receipt.TranslationTypeReceipt, JSON = json, Wares = wares });
             int OrderNumber = _orderRepository.AddOrder(order);
             RefreshMenu();
             return OrderNumber;
+        }
+        private Order UpdateOrder(Order order, string json) // json - в подальшому для логування
+        {
+            return _orderRepository.UpdateOrder(order);
+        }
+        private IEnumerable<Order> GetAllOrders(string json)// json - в подальшому для логування
+        {
+            return _orderRepository.GetAllOrders();
+        }
+        private IEnumerable<Order> GetActiveOrders(string json)// json - в подальшому для логування
+        {
+            return _orderRepository.GetActiveOrders();
         }
         private void OnPropertyChanged(String info)
         {
