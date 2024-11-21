@@ -36,16 +36,49 @@ namespace OrderTrack.ViewModel
 
             CreateDailyDatabase();
 
+            /////// ДЛЯ ТЕСТУ
+            var TESTorderWares = new List<OrderWares>
+        {
+            new OrderWares
+            {
+                IdWorkplace = 1,
+                CodePeriod = 123,
+                CodeReceipt = 456,
+                CodeWares = 789,
+                Quantity = 10,
+                Sort = 1,
+                DateCreate = DateTime.Now,
+                UserCreate = 1,
+                ReceiptLinks = new List<OrderReceiptLink>
+                {
+                    new OrderReceiptLink { IdWorkplace = 1, CodePeriod = 123, CodeReceipt = 456, CodeWares = 789, Quantity = 10.5m, CodeWaresTo = 1001, Sort = 1 }
+                }
+            },
+            new OrderWares
+            {
+                IdWorkplace = 1,
+                CodePeriod = 124,
+                CodeReceipt = 457,
+                CodeWares = 790,
+                Quantity = 5,
+                Sort = 2,
+                DateCreate = DateTime.Now,
+                UserCreate = 1,
+                ReceiptLinks = new List<OrderReceiptLink>
+                {
+                    new OrderReceiptLink { IdWorkplace = 1, CodePeriod = 124, CodeReceipt = 457, CodeWares = 790, Quantity = 5.0m, CodeWaresTo = 1002, Sort = 2 }
+                }
+            }
+        };
             var newOrders = new List<Order>
         {
-            new Order { IdWorkplace = 1,Status=eStatus.Ready,  CodePeriod = 13, CodeReceipt = 56,  DateCreate = DateTime.Now, DateStart = DateTime.Now, DateEnd = DateTime.Now, Type = "Type1", JSON = "{}" },
-            new Order { IdWorkplace = 2,Status=eStatus.Waiting,  CodePeriod = 123, CodeReceipt = 456, DateCreate = DateTime.Now, DateStart = DateTime.Now, DateEnd = DateTime.Now, Type = "Type1", JSON = "{}" },
-            new Order { IdWorkplace = 3,Status=eStatus.Preparing, CodePeriod = 124, CodeReceipt = 457,  DateCreate = DateTime.Now, DateStart = DateTime.Now, DateEnd = DateTime.Now, Type = "Type2", JSON = "{}" }
+            new Order { IdWorkplace = 1,Status=eStatus.Ready,  CodePeriod = 13, CodeReceipt = 56,  DateCreate = DateTime.Now, DateStart = DateTime.Now, DateEnd = DateTime.Now, Type = "Type1", JSON = "{}", Wares = TESTorderWares },
+            new Order { IdWorkplace = 2,Status=eStatus.Waiting,  CodePeriod = 123, CodeReceipt = 456, DateCreate = DateTime.Now, DateStart = DateTime.Now, DateEnd = DateTime.Now, Type = "Type1", JSON = "{}", Wares = TESTorderWares },
+            new Order { IdWorkplace = 3,Status=eStatus.Preparing, CodePeriod = 124, CodeReceipt = 457,  DateCreate = DateTime.Now, DateStart = DateTime.Now, DateEnd = DateTime.Now, Type = "Type2", JSON = "{}", Wares = TESTorderWares }
         };
 
             AddOrdersToDatabase(newOrders);
-
-            //var test2 = _orderRepository.GetOrderId(order);
+            /////// ДЛЯ ТЕСТУ
             RefreshMenu();
 
 
@@ -119,16 +152,19 @@ namespace OrderTrack.ViewModel
                     case eCommand.ChangeOrderState:
                         ComandOrder = JsonConvert.DeserializeObject<CommandAPI<Order>>(pDataApi);
                         var order = UpdateOrder(ComandOrder.Data, pDataApi);
-                        Res = new Status(0, order.ToJSON());
+                        Status<Order> OrderStatus = new(order);
+                        Res = OrderStatus;
                         break;
                     case eCommand.GetAllOrders:
                         var AllOrders = GetAllOrders(pDataApi);
-                        Res = new Status(0, AllOrders.ToJSON());
+                        Status<IEnumerable<Order>> AllOrdersStatus = new(AllOrders);
+                        Res = AllOrdersStatus;
                         break;
 
                     case eCommand.GetActiveOrders:
                         var ActiveOrders = GetActiveOrders(pDataApi);
-                        Res = new Status(0, ActiveOrders.ToJSON());
+                        Status<IEnumerable<Order>> ActiveOrdersStatus = new(ActiveOrders);
+                        Res = ActiveOrdersStatus;
                         break;
                     default:
                         Res = new Status(0, $"Не існує метода для обробки команди {pC.Command}!");

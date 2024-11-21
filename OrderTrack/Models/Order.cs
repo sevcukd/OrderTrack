@@ -61,6 +61,7 @@ namespace OrderTrack.Models
             this.ReceiptLinks = receiptLinks(receiptWares);
 
         }
+        public OrderWares() { }
         private IEnumerable<OrderReceiptLink> receiptLinks( ReceiptWares receiptWares)
         {
             List<OrderReceiptLink> orderReceiptLinks = new List<OrderReceiptLink>();
@@ -96,6 +97,7 @@ namespace OrderTrack.Models
             Quantity = 1m;//Доробити
             Sort = receiptWares.Sort;
         }
+        public OrderReceiptLink() { }
 
     }
 

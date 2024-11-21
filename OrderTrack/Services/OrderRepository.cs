@@ -15,16 +15,35 @@ namespace OrderTrack.Services
 
         public IEnumerable<Order> GetAllOrders()
         {
-            using (var connection = new SQLiteConnection(_connectionString))
-            {
-                return connection.Query<Order>("SELECT * FROM Orders").ToList();
-            }
+           return GetOrders("SELECT * FROM Orders");
         }
         public IEnumerable<Order> GetActiveOrders()
         {
+            return GetOrders($"SELECT * FROM Orders where Status <{(int)eStatus.Ready};");
+        }
+
+        private IEnumerable<Order> GetOrders(string sqlOrders)
+        {
             using (var connection = new SQLiteConnection(_connectionString))
             {
-                return connection.Query<Order>($"SELECT * FROM Orders where Status <{(int)eStatus.Ready};").ToList();
+                string sqlOrderWares = "SELECT * FROM OrderWares WHERE CodeReceipt = @CodeReceipt";
+                string sqlOrderReceiptLinks = "SELECT * FROM OrderReceiptLink WHERE CodeReceipt = @CodeReceipt";
+
+                var orders = connection.Query<Order>(sqlOrders).ToList();
+
+                foreach (var order in orders)
+                {
+                    // Load OrderWares for each order
+                    var orderWares = connection.Query<OrderWares>(sqlOrderWares, new { CodeReceipt = order.CodeReceipt }).ToList();
+                    foreach (var wares in orderWares)
+                    {
+                        // Load ReceiptLinks for each OrderWares
+                        wares.ReceiptLinks = connection.Query<OrderReceiptLink>(sqlOrderReceiptLinks, new { CodeReceipt = wares.CodeReceipt }).ToList();
+                    }
+                    order.Wares = orderWares;
+                }
+
+                return orders;
             }
         }
         public IEnumerable<Order> GetReadyOrders()
@@ -37,12 +56,16 @@ namespace OrderTrack.Services
         /// для тесту 
         public void AddOrders(IEnumerable<Order> orders)
         {
-            using (var connection = new SQLiteConnection(_connectionString))
+            foreach (var order in orders)
             {
-                string sql = $@"INSERT INTO Orders (IdWorkplace, Status, CodePeriod, CodeReceipt,  DateCreate, DateStart, DateEnd, Type, JSON)
-                               VALUES (@{nameof(Order.IdWorkplace)},@{nameof(Order.Status)}, @{nameof(Order.CodePeriod)}, @{nameof(Order.CodeReceipt)},  @{nameof(Order.DateCreate)}, @{nameof(Order.DateStart)}, @{nameof(Order.DateEnd)}, @{nameof(Order.Type)}, @{nameof(Order.JSON)})";
-                connection.Execute(sql, orders);
+                AddOrder(order); //TMP - для тесту
             }
+            //using (var connection = new SQLiteConnection(_connectionString))
+            //{
+            //    string sql = $@"INSERT INTO Orders (IdWorkplace, Status, CodePeriod, CodeReceipt,  DateCreate, DateStart, DateEnd, Type, JSON)
+            //                   VALUES (@{nameof(Order.IdWorkplace)},@{nameof(Order.Status)}, @{nameof(Order.CodePeriod)}, @{nameof(Order.CodeReceipt)},  @{nameof(Order.DateCreate)}, @{nameof(Order.DateStart)}, @{nameof(Order.DateEnd)}, @{nameof(Order.Type)}, @{nameof(Order.JSON)})";
+            //    connection.Execute(sql, orders);
+            //}
         }
         public int AddOrder(Order order)
         {
@@ -64,7 +87,7 @@ namespace OrderTrack.Services
             using (var connection = new SQLiteConnection(_connectionString))
             {
                 string sql = $@"
-                INSERT INTO Order_Wares (ID_WORKPLACE, CODE_PERIOD, CODE_RECEIPT, CODE_WARES, QUANTITY, SORT, DATE_CREATE, USER_CREATE)
+                INSERT INTO OrderWares (IdWorkplace, CodePeriod, CodeReceipt, CodeWares, Quantity, Sort, DateCreate, UserCreate)
                 VALUES (@{nameof(OrderWares.IdWorkplace)}, @{nameof(OrderWares.CodePeriod)}, @{nameof(OrderWares.CodeReceipt)}, @{nameof(OrderWares.CodeWares)}, @{nameof(OrderWares.Quantity)}, @{nameof(OrderWares.Sort)}, @{nameof(OrderWares.DateCreate)}, @{nameof(OrderWares.UserCreate)});";
 
                 connection.Execute(sql, orderWares);

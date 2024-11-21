@@ -51,16 +51,20 @@ namespace OrderTrack.Services
             LOGIN TEXT NOT NULL,
             PASSWORD TEXT NOT NULL
         );
-        CREATE TABLE Order_Wares(
-            ID_WORKPLACE INTEGER  NOT NULL,
-            CODE_PERIOD INTEGER  NOT NULL,
-            CODE_RECEIPT INTEGER  NOT NULL,
-            CODE_WARES INTEGER  NOT NULL,
-            QUANTITY NUMBER   NOT NULL,
-            SORT INTEGER  NOT NULL,
-            DATE_CREATE DATETIME NOT NULL DEFAULT (datetime('now','localtime')),
-            USER_CREATE INTEGER  NOT NULL
-            );
+
+CREATE TABLE OrderWares (
+                        Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        IdWorkplace INTEGER  NOT NULL,
+                        CodePeriod INTEGER  NOT NULL,
+                        CodeReceipt INTEGER  NOT NULL,
+                        CodeWares INTEGER  NOT NULL,
+                        Quantity NUMBER  NOT NULL,
+                        Sort INTEGER   NOT NULL,
+                        DateCreate DATETIME NOT NULL DEFAULT (datetime('now','localtime')),
+                        UserCreate INTEGER
+                    );
+
+
 CREATE TABLE OrderReceiptLink(
             IdWorkplace INTEGER  NOT NULL,
             CodePeriod INTEGER  NOT NULL,
