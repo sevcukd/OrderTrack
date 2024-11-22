@@ -87,8 +87,8 @@ namespace OrderTrack.Services
             using (var connection = new SQLiteConnection(_connectionString))
             {
                 string sql = $@"
-                INSERT INTO OrderWares (IdWorkplace, CodePeriod, CodeReceipt, CodeWares, Quantity, Sort, DateCreate, UserCreate)
-                VALUES (@{nameof(OrderWares.IdWorkplace)}, @{nameof(OrderWares.CodePeriod)}, @{nameof(OrderWares.CodeReceipt)}, @{nameof(OrderWares.CodeWares)}, @{nameof(OrderWares.Quantity)}, @{nameof(OrderWares.Sort)}, @{nameof(OrderWares.DateCreate)}, @{nameof(OrderWares.UserCreate)});";
+                INSERT INTO OrderWares (IdWorkplace, CodePeriod, CodeReceipt,  CodeWares, NameWares, Quantity, Sort, DateCreate, UserCreate)
+                VALUES (@{nameof(OrderWares.IdWorkplace)}, @{nameof(OrderWares.CodePeriod)}, @{nameof(OrderWares.CodeReceipt)}, @{nameof(OrderWares.CodeWares)}, @{nameof(OrderWares.NameWares)}, @{nameof(OrderWares.Quantity)}, @{nameof(OrderWares.Sort)}, @{nameof(OrderWares.DateCreate)}, @{nameof(OrderWares.UserCreate)});";
 
                 connection.Execute(sql, orderWares);
             }
@@ -98,8 +98,8 @@ namespace OrderTrack.Services
             using (var connection = new SQLiteConnection(_connectionString))
             {
                 string sql = $@"
-                INSERT INTO OrderReceiptLink (IdWorkplace, CodePeriod, CodeReceipt, CodeWares, Quantity, CodeWaresTo, Sort)
-                VALUES (@{nameof(OrderReceiptLink.IdWorkplace)}, @{nameof(OrderReceiptLink.CodePeriod)}, @{nameof(OrderReceiptLink.CodeReceipt)}, @{nameof(OrderReceiptLink.CodeWares)}, @{nameof(OrderReceiptLink.Quantity)}, @{nameof(OrderReceiptLink.CodeWaresTo)}, @{nameof(OrderReceiptLink.Sort)});";
+                INSERT INTO OrderReceiptLink (IdWorkplace, CodePeriod, Name, CodeReceipt, CodeWares, Quantity, CodeWaresTo, Sort)
+                VALUES (@{nameof(OrderReceiptLink.IdWorkplace)}, @{nameof(OrderReceiptLink.CodePeriod)}, @{nameof(OrderReceiptLink.Name)}, @{nameof(OrderReceiptLink.CodeReceipt)}, @{nameof(OrderReceiptLink.CodeWares)}, @{nameof(OrderReceiptLink.Quantity)}, @{nameof(OrderReceiptLink.CodeWaresTo)}, @{nameof(OrderReceiptLink.Sort)});";
 
                 connection.Execute(sql, orderReceiptLink);
             }

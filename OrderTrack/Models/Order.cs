@@ -42,6 +42,7 @@ namespace OrderTrack.Models
         public int CodePeriod { get; set; }
         public int CodeReceipt { get; set; }
         public int CodeWares { get; set; }
+        public string NameWares { get; set; }
         public decimal Quantity { get; set; }
         public int Sort { get; set; }
         public DateTime DateCreate { get; set; }
@@ -50,6 +51,7 @@ namespace OrderTrack.Models
         public OrderWares(ReceiptWares receiptWares)
         {
             this.CodeWares = receiptWares.CodeWares;
+            this.NameWares = receiptWares.NameWares;
             this.UserCreate = receiptWares.UserCreate;
             this.CodePeriod = receiptWares.CodePeriod;
             this.CodeReceipt = receiptWares.CodeReceipt;
@@ -81,6 +83,7 @@ namespace OrderTrack.Models
     public class OrderReceiptLink
     {
         public int IdWorkplace { get; set; }
+        public string Name { get; set; }
         public int CodePeriod { get; set; }
         public int CodeReceipt { get; set; }
         public int CodeWares { get; set; }
@@ -94,6 +97,7 @@ namespace OrderTrack.Models
             CodeReceipt = receiptWares.CodeReceipt;
             CodeWaresTo = receiptWares.CodeWares;
             CodeWares = waresLink.Code;
+            Name = waresLink.Name;
             Quantity = 1m;//Доробити
             Sort = receiptWares.Sort;
         }

@@ -58,6 +58,7 @@ CREATE TABLE OrderWares (
                         CodePeriod INTEGER  NOT NULL,
                         CodeReceipt INTEGER  NOT NULL,
                         CodeWares INTEGER  NOT NULL,
+                        NameWares TEXT NOT NULL,
                         Quantity NUMBER  NOT NULL,
                         Sort INTEGER   NOT NULL,
                         DateCreate DATETIME NOT NULL DEFAULT (datetime('now','localtime')),
@@ -70,6 +71,7 @@ CREATE TABLE OrderReceiptLink(
             CodePeriod INTEGER  NOT NULL,
             CodeReceipt INTEGER  NOT NULL,
             CodeWares INTEGER NOT NULL,
+            Name TEXT NOT NULL,
             Sort INTEGER NOT NULL default 0,
             CodeWaresTo INTEGER NOT NULL,            
             Quantity NUMBER NOT NULL default 0

@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Dynamic;
 using System.Timers;
 using System.Windows;
+using System.Xml.Linq;
 using Utils;
 using Timer = System.Timers.Timer;
 
@@ -41,32 +42,34 @@ namespace OrderTrack.ViewModel
         {
             new OrderWares
             {
-                IdWorkplace = 1,
-                CodePeriod = 123,
+                IdWorkplace = 77,
+                CodePeriod = 20241122,
                 CodeReceipt = 456,
-                CodeWares = 789,
-                Quantity = 10,
+                CodeWares = 189548,
+                NameWares = "Pizza Amatriciano 500g",
+                Quantity = 1,
                 Sort = 1,
                 DateCreate = DateTime.Now,
                 UserCreate = 1,
                 ReceiptLinks = new List<OrderReceiptLink>
                 {
-                    new OrderReceiptLink { IdWorkplace = 1, CodePeriod = 123, CodeReceipt = 456, CodeWares = 789, Quantity = 10.5m, CodeWaresTo = 1001, Sort = 1 }
+                    new OrderReceiptLink { IdWorkplace = 77, CodePeriod = 20241122, CodeReceipt = 456, CodeWares = 160584,Name = "Добавка до піци Ананас 30г", Quantity = 2m, CodeWaresTo = 189548, Sort = 1 }
                 }
             },
             new OrderWares
             {
-                IdWorkplace = 1,
-                CodePeriod = 124,
+                IdWorkplace = 77,
+                CodePeriod = 20241122,
                 CodeReceipt = 457,
-                CodeWares = 790,
-                Quantity = 5,
+                CodeWares = 169293,
+                NameWares = "Хот-дог Баварський  шт",
+                Quantity = 4,
                 Sort = 2,
                 DateCreate = DateTime.Now,
                 UserCreate = 1,
                 ReceiptLinks = new List<OrderReceiptLink>
                 {
-                    new OrderReceiptLink { IdWorkplace = 1, CodePeriod = 124, CodeReceipt = 457, CodeWares = 790, Quantity = 5.0m, CodeWaresTo = 1002, Sort = 2 }
+                    new OrderReceiptLink { IdWorkplace = 77, CodePeriod = 20241122, CodeReceipt = 457, CodeWares = 169269,Name = "Соус 28г", Quantity = 5.0m, CodeWaresTo = 169293, Sort = 2 }
                 }
             }
         };
