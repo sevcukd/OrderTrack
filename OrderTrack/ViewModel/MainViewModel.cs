@@ -77,6 +77,8 @@ namespace OrderTrack.ViewModel
         {
             new Order { IdWorkplace = 1,Status=eStatus.Ready,  CodePeriod = 13, CodeReceipt = 56,  DateCreate = DateTime.Now, DateStart = DateTime.Now, DateEnd = DateTime.Now, Type = "Type1", JSON = "{}", Wares = TESTorderWares },
             new Order { IdWorkplace = 2,Status=eStatus.Waiting,  CodePeriod = 123, CodeReceipt = 456, DateCreate = DateTime.Now, DateStart = DateTime.Now, DateEnd = DateTime.Now, Type = "Type1", JSON = "{}", Wares = TESTorderWares },
+                      new Order { IdWorkplace = 3,Status=eStatus.Preparing, CodePeriod = 124, CodeReceipt = 457,  DateCreate = DateTime.Now, DateStart = DateTime.Now, DateEnd = DateTime.Now, Type = "Type2", JSON = "{}", Wares = TESTorderWares },
+
             new Order { IdWorkplace = 3,Status=eStatus.Preparing, CodePeriod = 124, CodeReceipt = 457,  DateCreate = DateTime.Now, DateStart = DateTime.Now, DateEnd = DateTime.Now, Type = "Type2", JSON = "{}", Wares = TESTorderWares }
         };
 
@@ -141,6 +143,8 @@ namespace OrderTrack.ViewModel
                 CommandAPI<dynamic> pC = JsonConvert.DeserializeObject<CommandAPI<dynamic>>(pDataApi);
                 CommandAPI<Receipt> ComandReceipt;
                 CommandAPI<Order> ComandOrder;
+                CommandAPI<UpdateModel> ComandOrder2;
+
 
                 //CommandAPI<InfoRemoteCheckout> CommandRemoteInfo;
                 switch (pC.Command)
@@ -153,8 +157,8 @@ namespace OrderTrack.ViewModel
                         //MessageBox.Show($"Створено нове замовлення з номером: {orderNumber}");
                         break;
                     case eCommand.ChangeOrderState:
-                        ComandOrder = JsonConvert.DeserializeObject<CommandAPI<Order>>(pDataApi);
-                        var order = UpdateOrder(ComandOrder.Data, pDataApi);
+                        ComandOrder2 = JsonConvert.DeserializeObject<CommandAPI<UpdateModel>>(pDataApi);
+                        var order = UpdateOrder(ComandOrder2.Data, pDataApi);
                         Status<Order> OrderStatus = new(order);
                         Res = OrderStatus;
                         break;
@@ -189,7 +193,7 @@ namespace OrderTrack.ViewModel
             RefreshMenu();
             return OrderNumber;
         }
-        private Order UpdateOrder(Order order, string json) // json - в подальшому для логування
+        private Order UpdateOrder(UpdateModel order, string json) // json - в подальшому для логування
         {
             return _orderRepository.UpdateOrder(order);
         }
