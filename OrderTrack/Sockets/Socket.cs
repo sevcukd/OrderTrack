@@ -8,10 +8,12 @@ namespace OrderTrack.Sockets
 {
     public class SocketServer
     {
-        Func<string, Status> Action;
-        bool IsStart = false;
-        Socket listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        IPEndPoint ipPoint = new IPEndPoint(IPAddress.Any, 3443);//(IPAddress.Parse(IP), IpPort);
+        private Func<string, Status> Action;
+        private bool IsStart = false;
+        private Socket listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        private IPEndPoint ipPoint;
+        private readonly List<Socket> connectedClients = new List<Socket>();
+        private readonly object clientLock = new object(); // Для потокобезпечної роботи зі списком клієнтів
 
         public SocketServer(int pPort, Func<string, Status> pS)
         {
@@ -23,71 +25,126 @@ namespace OrderTrack.Sockets
         {
             try
             {
-                // связываем сокет с локальной точкой, по которой будем принимать данные
-                listenSocket.Bind(ipPoint);
-
-                // начинаем прослушивание
-                listenSocket.Listen(10);
-                //Console.WriteLine("Сервер запущен. Ожидание подключений...");
-
+                listenSocket.Bind(ipPoint); // Зв'язуємо сокет з локальною точкою
+                listenSocket.Listen(10); // Починаємо слухати
                 IsStart = true;
+                Console.WriteLine($"Сервер запущено на порту {ipPoint.Port}. Очікування підключень...");
+
                 while (IsStart)
                 {
-                    Socket handler = await listenSocket.AcceptAsync();
-                    Console.WriteLine("Connect");
-                    try
+                    var handler = await listenSocket.AcceptAsync();
+                    Console.WriteLine("Клієнт підключився.");
+
+                    lock (clientLock)
                     {
-                        // получаем сообщение
-                        StringBuilder builder = new StringBuilder();
-                        int bytes = 0; // количество полученных байтов
-                        byte[] data = new byte[1024]; // буфер для получаемых данных
-
-                        do
-                        {
-                            bytes = await handler.ReceiveAsync(data, SocketFlags.None);
-                            builder.Append(Encoding.UTF8.GetString(data, 0, bytes));
-                            Console.WriteLine(builder.ToString());
-                        }
-                        while (handler.Available > 0);
-
-                        var res = Action(builder.ToString());//
-                        //Console.WriteLine(DateTime.Now.ToShortTimeString() + ": " + builder.ToString());
-
-                        data = Encoding.UTF8.GetBytes(res.ToJSON());
-
-                        //Console.WriteLine("Відправляємо відповідь");
-                        await handler.SendAsync(data, SocketFlags.None);
+                        connectedClients.Add(handler); // Додаємо клієнта до списку
                     }
-                    catch (Exception ex)
-                    {
-                        try
-                        {
-                            Status res = new Status(ex);
-                            var data = Encoding.UTF8.GetBytes(res.ToJSON());
-                            await handler.SendAsync(data, SocketFlags.None);
-                        }
-                        catch (Exception) { };
-                        //FileLogger.WriteLogMessage(this, "StartAsync", ex);
-                    }
-                    finally
-                    {
-                        // закрываем сокет
-                        handler.Shutdown(SocketShutdown.Both);
-                        handler.Close();
-                    }
+
+                    _ = Task.Run(() => HandleClientAsync(handler));
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine($"Помилка сервера: {ex.Message}");
+            }
+        }
+
+        private async Task HandleClientAsync(Socket client)
+        {
+            try
+            {
+                using (client)
+                {
+                    // Отримуємо дані від клієнта
+                    StringBuilder builder = new StringBuilder();
+                    byte[] buffer = new byte[1024];
+
+                    do
+                    {
+                        int bytesRead = await client.ReceiveAsync(buffer, SocketFlags.None);
+                        if (bytesRead == 0) break;
+
+                        builder.Append(Encoding.UTF8.GetString(buffer, 0, bytesRead));
+                    }
+                    while (client.Available > 0);
+
+                    Console.WriteLine($"Отримано повідомлення: {builder}");
+
+                    // Обробляємо повідомлення
+                    var result = Action(builder.ToString());
+                    var responseData = Encoding.UTF8.GetBytes(result.ToJSON());
+
+                    // Відправляємо відповідь
+                    await client.SendAsync(responseData, SocketFlags.None);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Помилка обробки клієнта: {ex.Message}");
+            }
+            finally
+            {
+                // Видаляємо клієнта зі списку
+                lock (clientLock)
+                {
+                    connectedClients.Remove(client);
+                }
+                Console.WriteLine("Клієнт відключився.");
+            }
+        }
+
+        public async Task NotifyAllClientsAsync(string message)
+        {
+            byte[] messageData = Encoding.UTF8.GetBytes(message);
+
+            lock (clientLock)
+            {
+                foreach (var client in connectedClients.ToList()) // Створюємо копію списку для уникнення помилок
+                {
+                    _ = Task.Run(async () =>
+                    {
+                        try
+                        {
+                            await client.SendAsync(messageData, SocketFlags.None);
+                            Console.WriteLine($"Повідомлення надіслано клієнту.");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Помилка надсилання повідомлення клієнту: {ex.Message}");
+                            lock (clientLock)
+                            {
+                                connectedClients.Remove(client);
+                            }
+                        }
+                    });
+                }
             }
         }
 
         public void Stop()
         {
             IsStart = false;
+            lock (clientLock)
+            {
+                foreach (var client in connectedClients)
+                {
+                    try
+                    {
+                        client.Shutdown(SocketShutdown.Both);
+                        client.Close();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Помилка закриття сокета клієнта: {ex.Message}");
+                    }
+                }
+                connectedClients.Clear();
+            }
+            listenSocket.Close();
+            Console.WriteLine("Сервер зупинено.");
         }
     }
+
 
     public class SocketClient
     {

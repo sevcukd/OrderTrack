@@ -38,7 +38,7 @@ namespace OrderTrack.ViewModel
             CreateDailyDatabase();
 
             /////// ДЛЯ ТЕСТУ
-            var TESTorderWares = new List<OrderWares>
+       /*     var TESTorderWares = new List<OrderWares>
         {
             new OrderWares
             {
@@ -82,7 +82,7 @@ namespace OrderTrack.ViewModel
             new Order { IdWorkplace = 3,Status=eStatus.Preparing, CodePeriod = 124, CodeReceipt = 457,  DateCreate = DateTime.Now, DateStart = DateTime.Now, DateEnd = DateTime.Now, Type = "Type2", JSON = "{}", Wares = TESTorderWares }
         };
 
-            AddOrdersToDatabase(newOrders);
+            AddOrdersToDatabase(newOrders);*/
             /////// ДЛЯ ТЕСТУ
             RefreshMenu();
 
@@ -154,6 +154,7 @@ namespace OrderTrack.ViewModel
                         ComandReceipt = JsonConvert.DeserializeObject<CommandAPI<Receipt>>(pDataApi);
                         int orderNumber = CreateOrder(ComandReceipt.Data, pDataApi);
                         Res = new Status(0, $"{orderNumber}");
+                        _socketServer.NotifyAllClientsAsync("123");
                         //MessageBox.Show($"Створено нове замовлення з номером: {orderNumber}");
                         break;
                     case eCommand.ChangeOrderState:
