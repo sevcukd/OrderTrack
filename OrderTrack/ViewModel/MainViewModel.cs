@@ -38,51 +38,51 @@ namespace OrderTrack.ViewModel
             CreateDailyDatabase();
 
             /////// ДЛЯ ТЕСТУ
-       /*     var TESTorderWares = new List<OrderWares>
-        {
-            new OrderWares
-            {
-                IdWorkplace = 77,
-                CodePeriod = 20241122,
-                CodeReceipt = 456,
-                CodeWares = 189548,
-                NameWares = "Pizza Amatriciano 500g",
-                Quantity = 1,
-                Sort = 1,
-                DateCreate = DateTime.Now,
-                UserCreate = 1,
-                ReceiptLinks = new List<OrderReceiptLink>
-                {
-                    new OrderReceiptLink { IdWorkplace = 77, CodePeriod = 20241122, CodeReceipt = 456, CodeWares = 160584,Name = "Добавка до піци Ананас 30г", Quantity = 2m, CodeWaresTo = 189548, Sort = 1 }
-                }
-            },
-            new OrderWares
-            {
-                IdWorkplace = 77,
-                CodePeriod = 20241122,
-                CodeReceipt = 457,
-                CodeWares = 169293,
-                NameWares = "Хот-дог Баварський  шт",
-                Quantity = 4,
-                Sort = 2,
-                DateCreate = DateTime.Now,
-                UserCreate = 1,
-                ReceiptLinks = new List<OrderReceiptLink>
-                {
-                    new OrderReceiptLink { IdWorkplace = 77, CodePeriod = 20241122, CodeReceipt = 457, CodeWares = 169269,Name = "Соус 28г", Quantity = 5.0m, CodeWaresTo = 169293, Sort = 2 }
-                }
-            }
-        };
-            var newOrders = new List<Order>
-        {
-            new Order { IdWorkplace = 1,Status=eStatus.Ready,  CodePeriod = 13, CodeReceipt = 56,  DateCreate = DateTime.Now, DateStart = DateTime.Now, DateEnd = DateTime.Now, Type = "Type1", JSON = "{}", Wares = TESTorderWares },
-            new Order { IdWorkplace = 2,Status=eStatus.Waiting,  CodePeriod = 123, CodeReceipt = 456, DateCreate = DateTime.Now, DateStart = DateTime.Now, DateEnd = DateTime.Now, Type = "Type1", JSON = "{}", Wares = TESTorderWares },
-                      new Order { IdWorkplace = 3,Status=eStatus.Preparing, CodePeriod = 124, CodeReceipt = 457,  DateCreate = DateTime.Now, DateStart = DateTime.Now, DateEnd = DateTime.Now, Type = "Type2", JSON = "{}", Wares = TESTorderWares },
+            /*     var TESTorderWares = new List<OrderWares>
+             {
+                 new OrderWares
+                 {
+                     IdWorkplace = 77,
+                     CodePeriod = 20241122,
+                     CodeReceipt = 456,
+                     CodeWares = 189548,
+                     NameWares = "Pizza Amatriciano 500g",
+                     Quantity = 1,
+                     Sort = 1,
+                     DateCreate = DateTime.Now,
+                     UserCreate = 1,
+                     ReceiptLinks = new List<OrderReceiptLink>
+                     {
+                         new OrderReceiptLink { IdWorkplace = 77, CodePeriod = 20241122, CodeReceipt = 456, CodeWares = 160584,Name = "Добавка до піци Ананас 30г", Quantity = 2m, CodeWaresTo = 189548, Sort = 1 }
+                     }
+                 },
+                 new OrderWares
+                 {
+                     IdWorkplace = 77,
+                     CodePeriod = 20241122,
+                     CodeReceipt = 457,
+                     CodeWares = 169293,
+                     NameWares = "Хот-дог Баварський  шт",
+                     Quantity = 4,
+                     Sort = 2,
+                     DateCreate = DateTime.Now,
+                     UserCreate = 1,
+                     ReceiptLinks = new List<OrderReceiptLink>
+                     {
+                         new OrderReceiptLink { IdWorkplace = 77, CodePeriod = 20241122, CodeReceipt = 457, CodeWares = 169269,Name = "Соус 28г", Quantity = 5.0m, CodeWaresTo = 169293, Sort = 2 }
+                     }
+                 }
+             };
+                 var newOrders = new List<Order>
+             {
+                 new Order { IdWorkplace = 1,Status=eStatus.Ready,  CodePeriod = 13, CodeReceipt = 56,  DateCreate = DateTime.Now, DateStart = DateTime.Now, DateEnd = DateTime.Now, Type = "Type1", JSON = "{}", Wares = TESTorderWares },
+                 new Order { IdWorkplace = 2,Status=eStatus.Waiting,  CodePeriod = 123, CodeReceipt = 456, DateCreate = DateTime.Now, DateStart = DateTime.Now, DateEnd = DateTime.Now, Type = "Type1", JSON = "{}", Wares = TESTorderWares },
+                           new Order { IdWorkplace = 3,Status=eStatus.Preparing, CodePeriod = 124, CodeReceipt = 457,  DateCreate = DateTime.Now, DateStart = DateTime.Now, DateEnd = DateTime.Now, Type = "Type2", JSON = "{}", Wares = TESTorderWares },
 
-            new Order { IdWorkplace = 3,Status=eStatus.Preparing, CodePeriod = 124, CodeReceipt = 457,  DateCreate = DateTime.Now, DateStart = DateTime.Now, DateEnd = DateTime.Now, Type = "Type2", JSON = "{}", Wares = TESTorderWares }
-        };
+                 new Order { IdWorkplace = 3,Status=eStatus.Preparing, CodePeriod = 124, CodeReceipt = 457,  DateCreate = DateTime.Now, DateStart = DateTime.Now, DateEnd = DateTime.Now, Type = "Type2", JSON = "{}", Wares = TESTorderWares }
+             };
 
-            AddOrdersToDatabase(newOrders);*/
+                 AddOrdersToDatabase(newOrders);*/
             /////// ДЛЯ ТЕСТУ
             RefreshMenu();
 
@@ -154,7 +154,7 @@ namespace OrderTrack.ViewModel
                         ComandReceipt = JsonConvert.DeserializeObject<CommandAPI<Receipt>>(pDataApi);
                         int orderNumber = CreateOrder(ComandReceipt.Data, pDataApi);
                         Res = new Status(0, $"{orderNumber}");
-                        _socketServer.NotifyAllClientsAsync("123");
+                        //_socketServer.NotifyAllClientsAsync("123");
                         //MessageBox.Show($"Створено нове замовлення з номером: {orderNumber}");
                         break;
                     case eCommand.ChangeOrderState:
@@ -187,7 +187,8 @@ namespace OrderTrack.ViewModel
             List<OrderWares> wares = new();
             foreach (var goods in receipt.Wares)
             {
-                wares.Add(new OrderWares(goods));
+                if (goods.ProductionLocation > 0) // Перевірка чи товар потрібно готувати на якісь із зон
+                    wares.Add(new OrderWares(goods));
             }
             var order = (new Order { IdWorkplace = receipt.IdWorkplace, Status = eStatus.Waiting, CodePeriod = receipt.CodePeriod, CodeReceipt = receipt.CodeReceipt, DateCreate = DateTime.Now, DateStart = DateTime.Now, Type = receipt.TranslationTypeReceipt, JSON = json, Wares = wares });
             int OrderNumber = _orderRepository.AddOrder(order);
