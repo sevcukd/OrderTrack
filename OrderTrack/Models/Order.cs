@@ -64,14 +64,14 @@ namespace OrderTrack.Models
 
         }
         public OrderWares() { }
-        private IEnumerable<OrderReceiptLink> receiptLinks( ReceiptWares receiptWares)
+        private IEnumerable<OrderReceiptLink> receiptLinks(ReceiptWares receiptWares)
         {
             List<OrderReceiptLink> orderReceiptLinks = new List<OrderReceiptLink>();
             foreach (GW w in receiptWares.WaresLink)
             {
-                if (true)//(w.IsSelected == true) //ПЕРЕРОБИТИ
+                if (w.IsSelected == true)
                 {
-                    orderReceiptLinks.Add(new OrderReceiptLink(w,receiptWares));
+                    orderReceiptLinks.Add(new OrderReceiptLink(w, receiptWares));
                 }
             }
 
