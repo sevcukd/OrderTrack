@@ -155,6 +155,7 @@ namespace OrderTrack.ViewModel
                         int orderNumber = CreateOrder(ComandReceipt.Data, pDataApi);
                         Res = new Status(0, $"{orderNumber}");
                         _socketServer.NotifyAllClientsAsync("123");
+                        RefreshMenu();
                         //MessageBox.Show($"Створено нове замовлення з номером: {orderNumber}");
                         break;
                     case eCommand.ChangeOrderState:
@@ -162,6 +163,7 @@ namespace OrderTrack.ViewModel
                         var order = UpdateOrder(ComandOrder2.Data, pDataApi);
                         Status<Order> OrderStatus = new(order);
                         Res = OrderStatus;
+                        RefreshMenu();
                         break;
                     case eCommand.GetAllOrders:
                         var AllOrders = GetAllOrders(pDataApi);
