@@ -43,6 +43,19 @@ namespace OrderTrack.Services
                         CODE_USER INTEGER NOT NULL DEFAULT 0,
                         JSON TEXT
                     );
+        CREATE TABLE ReceiptWaresLink (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    CodeWaresTo INTEGER NOT NULL,
+    Sort INTEGER NOT NULL DEFAULT 0,
+    Quantity NUMBER NOT NULL DEFAULT 0,
+    NameWares TEXT NOT NULL,
+    CodeWares INTEGER NOT NULL,
+    IdWorkplace INTEGER NOT NULL,
+    CodePeriod INTEGER NOT NULL,
+    CodeReceipt INTEGER NOT NULL,
+    DateCreate DATETIME NOT NULL DEFAULT (datetime('now','localtime'))
+);
+  
         CREATE TABLE USER(
             CODE_USER INTEGER NOT NULL,
             NAME_USER TEXT NOT NULL,

@@ -1,4 +1,6 @@
 ﻿using Dapper;
+using ModelMID;
+using ModelMID.DB;
 using OrderTrack.Models;
 using System.Data.SQLite;
 
@@ -27,7 +29,8 @@ namespace OrderTrack.Services
             using (var connection = new SQLiteConnection(_connectionString))
             {
                 string sqlOrderWares = "SELECT * FROM OrderWares WHERE CodeReceipt = @CodeReceipt";
-                string sqlOrderReceiptLinks = "SELECT * FROM OrderReceiptLink WHERE CodeReceipt = @CodeReceipt";
+                string sqlOrderReceiptLinks = "SELECT * FROM OrderReceiptLink WHERE CodeReceipt = @CodeReceipt AND CodeWaresTo=@CodeWaresTo";
+                string sqlReceiptWaresLink = "SELECT * FROM ReceiptWaresLink  WHERE CodeReceipt = @CodeReceipt";
 
                 var orders = connection.Query<Order>(sqlOrders).ToList();
 
@@ -38,7 +41,8 @@ namespace OrderTrack.Services
                     foreach (var wares in orderWares)
                     {
                         // Load ReceiptLinks for each OrderWares
-                        wares.ReceiptLinks = connection.Query<OrderReceiptLink>(sqlOrderReceiptLinks, new { CodeReceipt = wares.CodeReceipt }).ToList();
+                        wares.ReceiptWaresLink= connection.Query<ReceiptWaresLink>(sqlReceiptWaresLink, new { CodeWaresTo=wares.CodeWares, CodeReceipt = wares.CodeReceipt}).ToList();
+                        wares.ReceiptLinks = connection.Query<OrderReceiptLink>(sqlOrderReceiptLinks, new { CodeWaresTo = wares.CodeWares, CodeReceipt = wares.CodeReceipt }).ToList();
                     }
                     order.Wares = orderWares;
                 }
@@ -81,9 +85,10 @@ namespace OrderTrack.Services
         public void AddWaresOrder(IEnumerable<OrderWares> orderWares)
         {
             foreach (var wares in orderWares)
+            {
                 AddLinkWares(wares.ReceiptLinks);
-
-
+                AddReceiptWaresLink(wares.ReceiptWaresLink);
+            }
             using (var connection = new SQLiteConnection(_connectionString))
             {
                 string sql = $@"
@@ -95,16 +100,40 @@ namespace OrderTrack.Services
         }
         public void AddLinkWares(IEnumerable<OrderReceiptLink> orderReceiptLink)
         {
-            using (var connection = new SQLiteConnection(_connectionString))
+            if (orderReceiptLink.Count() != 0)
             {
-                string sql = $@"
+                using (var connection = new SQLiteConnection(_connectionString))
+                {
+                    string sql = $@"
                 INSERT INTO OrderReceiptLink (IdWorkplace, CodePeriod, Name, CodeReceipt, CodeWares, Quantity, CodeWaresTo, Sort)
                 VALUES (@{nameof(OrderReceiptLink.IdWorkplace)}, @{nameof(OrderReceiptLink.CodePeriod)}, @{nameof(OrderReceiptLink.Name)}, @{nameof(OrderReceiptLink.CodeReceipt)}, @{nameof(OrderReceiptLink.CodeWares)}, @{nameof(OrderReceiptLink.Quantity)}, @{nameof(OrderReceiptLink.CodeWaresTo)}, @{nameof(OrderReceiptLink.Sort)});";
 
-                connection.Execute(sql, orderReceiptLink);
+                    connection.Execute(sql, orderReceiptLink);
+                }
             }
 
         }
+        public void AddReceiptWaresLink(IEnumerable<ReceiptWaresLink> receiptWaresLink)
+        {
+            using (var connection = new SQLiteConnection(_connectionString))
+            {
+                string sql = $@"
+        INSERT INTO ReceiptWaresLink 
+        (IdWorkplace, CodePeriod, CodeReceipt, CodeWares, NameWares, CodeWaresTo, Quantity, Sort) 
+        VALUES 
+        (@{nameof(ReceiptWaresLink.IdWorkplace)}, 
+         @{nameof(ReceiptWaresLink.CodePeriod)}, 
+         @{nameof(ReceiptWaresLink.CodeReceipt)}, 
+         @{nameof(ReceiptWaresLink.CodeWares)}, 
+         @{nameof(ReceiptWaresLink.NameWares)}, 
+         @{nameof(ReceiptWaresLink.CodeWaresTo)}, 
+         @{nameof(ReceiptWaresLink.Quantity)}, 
+         @{nameof(ReceiptWaresLink.Sort)});";
+
+                connection.Execute(sql, receiptWaresLink);
+            }
+        }
+
         public IEnumerable<int> GetOrderId(Order order)
         {
             using (var connection = new SQLiteConnection(_connectionString))
@@ -138,7 +167,7 @@ namespace OrderTrack.Services
                 connection.Execute(sql, new { Id = id });
             }
         }
-        public void ReplaceUser(IEnumerable<User> pUser)
+        public void ReplaceUser(IEnumerable<Models.User> pUser)
         {
             using (var connection = new SQLiteConnection(_connectionString))
             {
