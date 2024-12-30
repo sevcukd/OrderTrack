@@ -17,7 +17,7 @@ namespace OrderTrack.Services
 
         public IEnumerable<Order> GetAllOrders()
         {
-           return GetOrders("SELECT * FROM Orders");
+            return GetOrders("SELECT * FROM Orders");
         }
         public IEnumerable<Order> GetActiveOrders()
         {
@@ -41,7 +41,6 @@ namespace OrderTrack.Services
                     foreach (var wares in orderWares)
                     {
                         // Load ReceiptLinks for each OrderWares
-                        wares.ReceiptWaresLink= connection.Query<ReceiptWaresLink>(sqlReceiptWaresLink, new { CodeWaresTo=wares.CodeWares, CodeReceipt = wares.CodeReceipt}).ToList();
                         wares.ReceiptLinks = connection.Query<OrderReceiptLink>(sqlOrderReceiptLinks, new { CodeWaresTo = wares.CodeWares, CodeReceipt = wares.CodeReceipt }).ToList();
                     }
                     order.Wares = orderWares;
@@ -54,7 +53,7 @@ namespace OrderTrack.Services
         {
             using (var connection = new SQLiteConnection(_connectionString))
             {
-                return connection.Query<Order>($"SELECT * FROM Orders where Status = {(int)eStatus.Ready};").ToList();
+                return connection.Query<Order>($"SELECT * FROM Orders where Status = {(int)eStatus.Ready} AND DateEnd >= datetime('now', 'localtime', '-10 minutes') AND DateEnd <= datetime('now', 'localtime')").ToList();
             }
         }
         /// для тесту 
@@ -87,7 +86,6 @@ namespace OrderTrack.Services
             foreach (var wares in orderWares)
             {
                 AddLinkWares(wares.ReceiptLinks);
-                AddReceiptWaresLink(wares.ReceiptWaresLink);
             }
             using (var connection = new SQLiteConnection(_connectionString))
             {
@@ -151,7 +149,8 @@ namespace OrderTrack.Services
                 string sql = @"
                 UPDATE Orders 
                 SET 
-                    Status = @Status
+                    Status = @Status,
+                    DateEnd =(datetime('now','localtime'))
                 WHERE Id = @Id;
                 SELECT * FROM Orders WHERE Id = @Id;
                 ";

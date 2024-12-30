@@ -15,5 +15,10 @@ namespace OrderTrack
 
             this.DataContext = new MainViewModel();
         }
+
+        private void Exit(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
     }
 }

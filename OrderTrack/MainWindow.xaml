@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:OrderTrack" xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         mc:Ignorable="d"
         WindowStyle="None"
-        Title="MainWindow" Height="768" Width="1366">
+        Title="MainWindow" Height="768" Width="1366"
+        WindowState="Minimized">
     <Window.Resources>
         <Style x:Key="OrderItemStyle" TargetType="ListViewItem">
             <Setter Property="FontWeight" Value="Bold"/>
@@ -53,9 +54,12 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="5*"/>
-            <RowDefinition Height="*"/>
+            <!--<RowDefinition Height="*"/>-->
         </Grid.RowDefinitions>
-
+        <Button Grid.Row="0" Grid.Column="1" 
+                BorderBrush="Transparent" Background="Transparent" 
+                HorizontalAlignment="Right" VerticalAlignment="Top" 
+                Height="100" Width="100"  Click="Exit" />
         <TextBlock Text="Черга замовлень:"
                    Grid.Row="0" Grid.Column="0" Margin="20,0,0,0"
                    HorizontalAlignment="Left" VerticalAlignment="Bottom"

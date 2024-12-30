@@ -32,6 +32,7 @@ namespace OrderTrack.ViewModel
                 _socketServer = new SocketServer(Global.PortAPI, CallBackApi);
                 _ = _socketServer.StartAsync();
             }
+            FileLogger.Init(Global.PathLog, 0);
 
             _orderRepository = new OrderRepository();
 
@@ -94,7 +95,8 @@ namespace OrderTrack.ViewModel
         public void RefreshMenu()
         {
             ActiveOrders = GetActiveOrders();
-            ReadyOrders = GetReadyOrders();
+            ReadyOrders = new ObservableCollection<Order>(GetReadyOrders().OrderByDescending(p => p.DateEnd));
+            OnTimerElapsed(null, null);
             OnPropertyChanged(nameof(ActiveOrders));
             OnPropertyChanged(nameof(ReadyOrders));
         }
@@ -115,7 +117,7 @@ namespace OrderTrack.ViewModel
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                var ordersToRemove = ReadyOrders.Where(o => o.DateCreate.AddMinutes(5) <= DateTime.Now).ToList();
+                var ordersToRemove = ReadyOrders.Where(o => o.DateEnd.AddMinutes(5) <= DateTime.Now).ToList();
                 foreach (var order in ordersToRemove)
                 {
                     ReadyOrders.Remove(order);
@@ -124,6 +126,7 @@ namespace OrderTrack.ViewModel
         }
         private void CreateDailyDatabase()
         {
+            FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, "Start create daily DB");
             DatabaseService.CreateDailyDatabase();
             var _msSqlRepository = new MsSqlRepository();
             var users = _msSqlRepository.SqlGetUser();
@@ -150,38 +153,56 @@ namespace OrderTrack.ViewModel
                 switch (pC.Command)
                 {
                     case eCommand.GetOrderNumber:
+                        if (!DatabaseService.IsPresentDB())
+                            CreateDailyDatabase();
+
                         //код для отримання номера замовлення
                         ComandReceipt = JsonConvert.DeserializeObject<CommandAPI<Receipt>>(pDataApi);
                         int orderNumber = CreateOrder(ComandReceipt.Data, pDataApi);
                         Res = new Status(0, $"{orderNumber}");
-                        _socketServer.NotifyAllClientsAsync("123");
+                        //_socketServer.NotifyAllClientsAsync("123");
                         RefreshMenu();
-                        //MessageBox.Show($"Створено нове замовлення з номером: {orderNumber}");
+                        FileLogger.WriteLogMessage("GetOrderNumber", System.Reflection.MethodBase.GetCurrentMethod().Name, $"Order Number => {Res}");
                         break;
                     case eCommand.ChangeOrderState:
+                        if (!DatabaseService.IsPresentDB())
+                            CreateDailyDatabase();
                         ComandOrder2 = JsonConvert.DeserializeObject<CommandAPI<UpdateModel>>(pDataApi);
                         var order = UpdateOrder(ComandOrder2.Data, pDataApi);
                         Status<Order> OrderStatus = new(order);
                         Res = OrderStatus;
                         RefreshMenu();
+                        FileLogger.WriteLogMessage("ChangeOrderState", System.Reflection.MethodBase.GetCurrentMethod().Name, pDataApi);
+
                         break;
                     case eCommand.GetAllOrders:
+                        if (!DatabaseService.IsPresentDB())
+                            CreateDailyDatabase();
                         var AllOrders = GetAllOrders(pDataApi);
                         Status<IEnumerable<Order>> AllOrdersStatus = new(AllOrders);
                         Res = AllOrdersStatus;
+                        FileLogger.WriteLogMessage("GetAllOrders", System.Reflection.MethodBase.GetCurrentMethod().Name, $"Знайдено {AllOrders.Count()} замовлень");
                         break;
 
                     case eCommand.GetActiveOrders:
+                        if (!DatabaseService.IsPresentDB())
+                            CreateDailyDatabase();
                         var ActiveOrders = GetActiveOrders(pDataApi);
                         Status<IEnumerable<Order>> ActiveOrdersStatus = new(ActiveOrders);
                         Res = ActiveOrdersStatus;
+                        FileLogger.WriteLogMessage("GetActiveOrders", System.Reflection.MethodBase.GetCurrentMethod().Name, $"Знайдено {ActiveOrders.Count()} активних замовлень");
                         break;
                     default:
                         Res = new Status(0, $"Не існує метода для обробки команди {pC.Command}!");
+                        FileLogger.WriteLogMessage("Error", System.Reflection.MethodBase.GetCurrentMethod().Name, $"Не припустима команда: {pC.Command}");
                         break;
                 }
             }
-            catch (Exception ex) { Res = new Status(ex); }
+            catch (Exception ex)
+            {
+                Res = new Status(ex);
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, ex);
+            }
             return Res;
         }
         private int CreateOrder(Receipt receipt, string json)
@@ -192,7 +213,7 @@ namespace OrderTrack.ViewModel
                 if (goods.ProductionLocation > 0) // Перевірка чи товар потрібно готувати на якісь із зон
                     wares.Add(new OrderWares(goods));
             }
-            var order = (new Order { IdWorkplace = receipt.IdWorkplace, Status = eStatus.Waiting, CodePeriod = receipt.CodePeriod, CodeReceipt = receipt.CodeReceipt, DateCreate = DateTime.Now, DateStart = DateTime.Now, Type = receipt.TranslationTypeReceipt, JSON = json, Wares = wares });
+            var order = (new Order { IdWorkplace = receipt.IdWorkplace, Status = eStatus.Waiting, CodePeriod = receipt.CodePeriod, CodeReceipt = receipt.CodeReceipt, DateCreate = DateTime.Now, DateStart = DateTime.Now, DateEnd = DateTime.Now, Type = receipt.TranslationTypeReceipt, JSON = json, Wares = wares });
             int OrderNumber = _orderRepository.AddOrder(order);
             RefreshMenu();
             return OrderNumber;

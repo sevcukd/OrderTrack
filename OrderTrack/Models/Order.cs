@@ -48,12 +48,10 @@ namespace OrderTrack.Models
         public int Sort { get; set; }
         public DateTime DateCreate { get; set; }
         public int UserCreate { get; set; }
-        public IEnumerable<ReceiptWaresLink> ReceiptWaresLink { get; set; }
 
         public IEnumerable<OrderReceiptLink> ReceiptLinks { get; set; }
         public OrderWares(ReceiptWares receiptWares)
         {
-            this.ReceiptWaresLink = receiptWares.ReceiptWaresLink;
             this.CodeWares = receiptWares.CodeWares;
             this.NameWares = receiptWares.NameWares;
             this.UserCreate = receiptWares.UserCreate;

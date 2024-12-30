@@ -1,5 +1,6 @@
 ﻿using System.Data.SQLite;
 using System.IO;
+using Utils;
 namespace OrderTrack.Services
 {
     public static class DatabaseService
@@ -7,6 +8,10 @@ namespace OrderTrack.Services
         public static string GetDatabaseName()
         {
             string today = DateTime.Now.ToString("ddMMyy");
+            if (!Path.Exists(Global.SQLiteDatabasePath))
+            {
+                System.IO.Directory.CreateDirectory(Global.SQLiteDatabasePath);
+            }
             return Path.Combine(Global.SQLiteDatabasePath, $"Orders_{today}.db");
         }
 
@@ -15,13 +20,18 @@ namespace OrderTrack.Services
             string databaseName = GetDatabaseName();
             return $"Data Source={databaseName};Version=3;";
         }
+        public static bool IsPresentDB ()
+        {
+            string databaseName = GetDatabaseName();
+            return File.Exists(databaseName);
+        }
 
         public static void CreateDailyDatabase()
         {
             string databaseName = GetDatabaseName();
             string connectionString = GetConnectionString();
 
-            if (!File.Exists(databaseName))
+            if (!IsPresentDB())
             {
                 SQLiteConnection.CreateFile(databaseName);
 
@@ -43,19 +53,6 @@ namespace OrderTrack.Services
                         CODE_USER INTEGER NOT NULL DEFAULT 0,
                         JSON TEXT
                     );
-        CREATE TABLE ReceiptWaresLink (
-    Id INTEGER PRIMARY KEY AUTOINCREMENT,
-    CodeWaresTo INTEGER NOT NULL,
-    Sort INTEGER NOT NULL DEFAULT 0,
-    Quantity NUMBER NOT NULL DEFAULT 0,
-    NameWares TEXT NOT NULL,
-    CodeWares INTEGER NOT NULL,
-    IdWorkplace INTEGER NOT NULL,
-    CodePeriod INTEGER NOT NULL,
-    CodeReceipt INTEGER NOT NULL,
-    DateCreate DATETIME NOT NULL DEFAULT (datetime('now','localtime'))
-);
-  
         CREATE TABLE USER(
             CODE_USER INTEGER NOT NULL,
             NAME_USER TEXT NOT NULL,
@@ -97,8 +94,12 @@ CREATE TABLE OrderReceiptLink(
                 }
 
 
-                
+                FileLogger.WriteLogMessage("CreateDB", System.Reflection.MethodBase.GetCurrentMethod().Name, $"Створено нову базу {databaseName}");
+
             }
+            else
+                FileLogger.WriteLogMessage("CreateDB", System.Reflection.MethodBase.GetCurrentMethod().Name, $"База вже існує! {databaseName}");
+
         }
     }
 }

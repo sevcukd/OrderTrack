@@ -22,6 +22,7 @@ namespace OrderTrack
 
         public static string SQLiteDatabasePath => Configuration["DatabaseSettings:SQLiteDatabasePath"];
         public static string MsSqlConnectionString => Configuration["DatabaseSettings:MsSqlConnectionString"];
+        public static string PathLog => Configuration["PathLog"];
         public static int PortAPI => Configuration.GetValue<int>("Socket:PortAPI");
     }
 }
