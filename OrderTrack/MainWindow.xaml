@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         WindowStyle="None"
         Title="MainWindow" Height="768" Width="1366"
-        WindowState="Minimized">
+        WindowState="Maximized">
     <Window.Resources>
         <Style x:Key="OrderItemStyle" TargetType="ListViewItem">
             <Setter Property="FontWeight" Value="Bold"/>

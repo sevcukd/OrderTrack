@@ -162,7 +162,7 @@ namespace OrderTrack.ViewModel
                         Res = new Status(0, $"{orderNumber}");
                         //_socketServer.NotifyAllClientsAsync("123");
                         RefreshMenu();
-                        FileLogger.WriteLogMessage("GetOrderNumber", System.Reflection.MethodBase.GetCurrentMethod().Name, $"Order Number => {Res}");
+                        FileLogger.WriteLogMessage("GetOrderNumber", System.Reflection.MethodBase.GetCurrentMethod().Name, $"Order Number => {Res.TextState}{Environment.NewLine}{pDataApi}");
                         break;
                     case eCommand.ChangeOrderState:
                         if (!DatabaseService.IsPresentDB())
@@ -172,7 +172,7 @@ namespace OrderTrack.ViewModel
                         Status<Order> OrderStatus = new(order);
                         Res = OrderStatus;
                         RefreshMenu();
-                        FileLogger.WriteLogMessage("ChangeOrderState", System.Reflection.MethodBase.GetCurrentMethod().Name, pDataApi);
+                        FileLogger.WriteLogMessage("ChangeOrderState", System.Reflection.MethodBase.GetCurrentMethod().Name, $"Зміна стану замовлення №{ComandOrder2.Data.Id} {Environment.NewLine}{pDataApi}");
 
                         break;
                     case eCommand.GetAllOrders:
@@ -181,7 +181,7 @@ namespace OrderTrack.ViewModel
                         var AllOrders = GetAllOrders(pDataApi);
                         Status<IEnumerable<Order>> AllOrdersStatus = new(AllOrders);
                         Res = AllOrdersStatus;
-                        FileLogger.WriteLogMessage("GetAllOrders", System.Reflection.MethodBase.GetCurrentMethod().Name, $"Знайдено {AllOrders.Count()} замовлень");
+                        FileLogger.WriteLogMessage("GetAllOrders", System.Reflection.MethodBase.GetCurrentMethod().Name, $"Знайдено {AllOrders.Count()} замовлень{Environment.NewLine}{pDataApi}");
                         break;
 
                     case eCommand.GetActiveOrders:
@@ -190,18 +190,18 @@ namespace OrderTrack.ViewModel
                         var ActiveOrders = GetActiveOrders(pDataApi);
                         Status<IEnumerable<Order>> ActiveOrdersStatus = new(ActiveOrders);
                         Res = ActiveOrdersStatus;
-                        FileLogger.WriteLogMessage("GetActiveOrders", System.Reflection.MethodBase.GetCurrentMethod().Name, $"Знайдено {ActiveOrders.Count()} активних замовлень");
+                        FileLogger.WriteLogMessage("GetActiveOrders", System.Reflection.MethodBase.GetCurrentMethod().Name, $"Знайдено {ActiveOrders.Count()} активних замовлень{Environment.NewLine}{pDataApi}");
                         break;
                     default:
                         Res = new Status(0, $"Не існує метода для обробки команди {pC.Command}!");
-                        FileLogger.WriteLogMessage("Error", System.Reflection.MethodBase.GetCurrentMethod().Name, $"Не припустима команда: {pC.Command}");
+                        FileLogger.WriteLogMessage("Error", System.Reflection.MethodBase.GetCurrentMethod().Name, $"Не припустима команда: {pC.Command}{Environment.NewLine}{pDataApi}");
                         break;
                 }
             }
             catch (Exception ex)
             {
                 Res = new Status(ex);
-                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, ex);
+                FileLogger.WriteLogMessage(this, System.Reflection.MethodBase.GetCurrentMethod().Name, $"{ex}{Environment.NewLine}{pDataApi}");
             }
             return Res;
         }
