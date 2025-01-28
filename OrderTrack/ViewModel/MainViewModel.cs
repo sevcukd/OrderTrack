@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using OrderTrack.Models;
 using OrderTrack.Services;
-using OrderTrack.Sockets;
+//using OrderTrack.Sockets;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Dynamic;
@@ -10,6 +10,7 @@ using System.Timers;
 using System.Windows;
 using System.Xml.Linq;
 using Utils;
+using UtilNetwork;
 using Timer = System.Timers.Timer;
 
 namespace OrderTrack.ViewModel
