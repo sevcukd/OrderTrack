@@ -28,7 +28,7 @@ namespace OrderTrack.Services
         {
             using (var connection = new SQLiteConnection(_connectionString))
             {
-                string sqlOrderWares = "SELECT * FROM OrderWares WHERE CodeReceipt = @CodeReceipt";
+                string sqlOrderWares = "SELECT * FROM OrderWares WHERE CodeReceipt = @CodeReceipt and IdWorkplace = @IdWorkplace";
                 string sqlOrderReceiptLinks = "SELECT * FROM OrderReceiptLink WHERE CodeReceipt = @CodeReceipt AND CodeWaresTo=@CodeWaresTo";
                 string sqlReceiptWaresLink = "SELECT * FROM ReceiptWaresLink  WHERE CodeReceipt = @CodeReceipt";
 
@@ -37,7 +37,7 @@ namespace OrderTrack.Services
                 foreach (var order in orders)
                 {
                     // Load OrderWares for each order
-                    var orderWares = connection.Query<OrderWares>(sqlOrderWares, new { CodeReceipt = order.CodeReceipt }).ToList();
+                    var orderWares = connection.Query<OrderWares>(sqlOrderWares, new { CodeReceipt = order.CodeReceipt, IdWorkplace = order.IdWorkplace }).ToList();
                     foreach (var wares in orderWares)
                     {
                         // Load ReceiptLinks for each OrderWares

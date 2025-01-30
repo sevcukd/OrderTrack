@@ -30,7 +30,7 @@ namespace OrderTrack.ViewModel
         {
             if (Global.PortAPI > 0)
             {
-                _socketServer = new SocketServer(Global.PortAPI, CallBackApi);
+                _socketServer = new SocketServer(Global.PortAPI, CallBackApi, 65536);
                 _ = _socketServer.StartAsync();
             }
             FileLogger.Init(Global.PathLog, 0);
