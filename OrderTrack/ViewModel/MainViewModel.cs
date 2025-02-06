@@ -158,8 +158,8 @@ namespace OrderTrack.ViewModel
                             CreateDailyDatabase();
 
                         //код для отримання номера замовлення
-                        ComandReceipt = JsonConvert.DeserializeObject<CommandAPI<Receipt>>(pDataApi);
-                        int orderNumber = CreateOrder(ComandReceipt.Data, pDataApi);
+                        ComandOrder = JsonConvert.DeserializeObject<CommandAPI<Order>>(pDataApi);
+                        int orderNumber = CreateOrder(ComandOrder.Data, pDataApi);
                         Res = new Status(0, $"{orderNumber}");
                         //_socketServer.NotifyAllClientsAsync("123");
                         RefreshMenu();
@@ -206,15 +206,16 @@ namespace OrderTrack.ViewModel
             }
             return Res;
         }
-        private int CreateOrder(Receipt receipt, string json)
+        private int CreateOrder(Order order, string json)
         {
-            List<OrderWares> wares = new();
-            foreach (var goods in receipt.Wares)
-            {
-                if (goods.ProductionLocation > 0) // Перевірка чи товар потрібно готувати на якісь із зон
-                    wares.Add(new OrderWares(goods));
-            }
-            var order = (new Order { IdWorkplace = receipt.IdWorkplace, Status = eStatus.Waiting, CodePeriod = receipt.CodePeriod, CodeReceipt = receipt.CodeReceipt, DateCreate = DateTime.Now, DateStart = DateTime.Now, DateEnd = DateTime.Now, Type = receipt.TranslationTypeReceipt, JSON = json, Wares = wares });
+            // List<OrderWares> wares = new();
+            // foreach (var goods in receipt.Wares)
+            //{
+            //    if (goods.ProductionLocation > 0) // Перевірка чи товар потрібно готувати на якісь із зон
+            //        wares.Add(new OrderWares(goods));
+            // }
+            //var order = (new Order { IdWorkplace = receipt.IdWorkplace, Status = eStatus.Waiting, CodePeriod = receipt.CodePeriod, CodeReceipt = receipt.CodeReceipt, DateCreate = DateTime.Now, DateStart = DateTime.Now, DateEnd = DateTime.Now, Type = receipt.TranslationTypeReceipt, JSON = json, Wares = wares });
+            order.JSON = json;
             int OrderNumber = _orderRepository.AddOrder(order);
             RefreshMenu();
             return OrderNumber;
